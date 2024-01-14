@@ -22,6 +22,11 @@ import org.openqa.selenium.support.ui.FluentWait;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class Library {
+	
+	public static void main(String[] args) {
+		System.out.println("Response: " + getResponse("How to milk a cow"));
+	}
+	
 	private static WebDriver driver;
     public static String getResponse(String request) {
 		driver = new ChromeDriver(setupChromeDriver());
@@ -108,10 +113,6 @@ public class Library {
         });
     	
     	return toSearch.findElement(toFind);
-	}
-
-	public static void main(String[] args) {
-		System.out.println("Response: " + getResponse("How to milk a cow"));
 	}
 	
 	private static ChromeOptions setupChromeDriver() {
