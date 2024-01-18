@@ -27,6 +27,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class Library {
 	
+	private static final boolean USE_URL_ARGS = true;
 	public static void main(String[] args) {
 		System.out.println("Response: " + getResponse("How to milk a cow"));
 	}
@@ -35,35 +36,35 @@ public class Library {
     public static String getResponse(String request) {
 		driver = new ChromeDriver(setupChromeDriver());
 		
-		/*
-		driver.get("https://www.bing.com/search?q=Bing+AI&showconv=1&FORM=hpcodx");
-		
-		try {
-			waitUntilFound(driver, By.cssSelector("#bnp_btn_accept")).click();
-		} catch (TimeoutException e) {
+		if(USE_URL_ARGS) {
+			try {
+				driver.get("https://www.bing.com/search?showconv=1&sendquery=1&q=" + URLEncoder.encode(request, StandardCharsets.UTF_8.toString()));
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
+		} else {
+			driver.get("https://www.bing.com/search?q=Bing+AI&showconv=1&FORM=hpcodx");
+			
+			try {
+				waitUntilFound(driver, By.cssSelector("#bnp_btn_accept")).click();
+			} catch (TimeoutException e) {
+				
+			}
 		}
+		
 		
 		SearchContext shadowRoot1 = waitUntilFound(driver, By.cssSelector(".cib-serp-main")).getShadowRoot();
 		SearchContext shadowRoot2 = waitUntilFound(shadowRoot1, By.cssSelector("#cib-action-bar-main")).getShadowRoot();
 		SearchContext shadowRoot3 = waitUntilFound(shadowRoot2, By.cssSelector("cib-text-input")).getShadowRoot();
 		WebElement searchBox = waitUntilFound(shadowRoot3, By.cssSelector("#searchbox"));
 		
-		waitOneSecond();
-		
-		new Actions(driver).sendKeys(searchBox, request, Keys.chord(Keys.ENTER)).build().perform();
-		*/
-		try {
-			driver.get("https://www.bing.com/search?showconv=1&sendquery=1&q=" + URLEncoder.encode(request, StandardCharsets.UTF_8.toString()));
-		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		if(!USE_URL_ARGS){
+			waitOneSecond();
+			
+			new Actions(driver).sendKeys(searchBox, request, Keys.chord(Keys.ENTER)).build().perform();
 		}
-		
-		SearchContext shadowRoot1 = waitUntilFound(driver, By.cssSelector(".cib-serp-main")).getShadowRoot();
-		SearchContext shadowRoot2 = waitUntilFound(shadowRoot1, By.cssSelector("#cib-action-bar-main")).getShadowRoot();
-		SearchContext shadowRoot3 = waitUntilFound(shadowRoot2, By.cssSelector("cib-text-input")).getShadowRoot();
-		WebElement searchBox = waitUntilFound(shadowRoot3, By.cssSelector("#searchbox"));
 		
 		waitUntilBingHasFinishedPrinting(shadowRoot2);
 		
