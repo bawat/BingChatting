@@ -30,12 +30,15 @@ public class Library {
 	
 	private static final boolean USE_URL_ARGS = true;
 	public static void main(String[] args) {
-		System.out.println("Response: " + getResponse("How to milk a cow"));
+		System.out.println("Response: " + getResponse("How to milk a cow", true));
 	}
 	
 	private static WebDriver driver;
-    public static String getResponse(String request) {
-		driver = new ChromeDriver(setupChromeDriver());
+	public static String getResponse(String request) {
+		return getResponse(request, false);
+	}
+    private static String getResponse(String request, boolean showBrowser) {
+		driver = new ChromeDriver(setupChromeDriver(showBrowser));
 		
 		if(USE_URL_ARGS) {
 			try {
@@ -139,7 +142,7 @@ public class Library {
     	return toSearch.findElement(toFind);
 	}
 	
-	private static ChromeOptions setupChromeDriver() {
+	private static ChromeOptions setupChromeDriver(boolean showBrowser) {
 		ChromeOptions chromeOptions = new ChromeOptions();
 		chromeOptions.addArguments("--remote-allow-origins=*");
 		chromeOptions.addArguments("--disable-extensions");
@@ -155,7 +158,7 @@ public class Library {
 		chromeOptions.addArguments("--disable-crash-reporter");
 		chromeOptions.addArguments("--window-size=1920,1080");
 		
-		//chromeOptions.addArguments("--headless=new");
+		if(!showBrowser) chromeOptions.addArguments("--headless=new");
 		System.setProperty("webdriver.chrome.silentOutput", "true");
 		//System.setProperty("webdriver.http.factory", "apache");
 		
