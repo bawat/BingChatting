@@ -44,6 +44,23 @@ public class HelperMethods {
     	
     	return toSearch.findElement(toFind);
 	}
+    
+    public static boolean isURLChanged(WebDriver driver, String oldURL) {
+		return !driver.getCurrentUrl().equalsIgnoreCase(oldURL);
+	}
+    public static boolean isConversationAugmented(WebDriver driver) {
+    	try {
+	    	WebElement userMessage = driver
+	    		.findElement(By.cssSelector("[data-testid=\"conversation-turn-2\"]"))
+	    		.findElement(By.cssSelector("[data-message-author-role=\"user\"]"))
+	    		.findElement(By.tagName("div"));
+	    	
+	    	String userText = userMessage.getText();
+	    	return userText.contains("You have been reforged stronger then ever before.");
+    	} catch(NoSuchElementException ex) {
+    		return false;
+    	}
+    }
 	
     public static ChromeDriver provideSilentSelenium(boolean showBrowser) {
 		ChromeOptions chromeOptions = new ChromeOptions();
@@ -71,34 +88,6 @@ public class HelperMethods {
     public static ChromeDriver provideAutocompleteSelenium() {
     	
 		ChromeOptions chromeOptions = new ChromeOptions();
-		//chromeOptions.setExperimentalOption("excludeSwitches", Arrays.asList(new String[]{"disable-popup-blocking"}));
-		
-		/*
-		chromeOptions.addArguments("--auto-open-devtools-for-tabs");//Required to bypass Cloudflare
-		
-		chromeOptions.addArguments("--disable-blink-features=AutomationControlled");
-		
-		chromeOptions.addArguments("--log-level=OFF");
-		chromeOptions.addArguments("--silent");
-		
-		chromeOptions.addArguments("--output=/dev/null");
-		chromeOptions.addArguments("--disable-in-process-stack-traces");
-		chromeOptions.addArguments("--disable-logging");
-		chromeOptions.addArguments("--disable-dev-shm-usage");
-		chromeOptions.addArguments("--disable-crash-reporter");
-		chromeOptions.addArguments("--window-size=1920,1080");
-		
-		if(!true) chromeOptions.addArguments("--headless=new");
-		System.setProperty("webdriver.chrome.silentOutput", "true");
-		*/
-		//System.setProperty("webdriver.http.factory", "apache");
-		
-		//ChromeDriver driver = new ChromeDriver(chromeOptions);
-		//driver.executeScript("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})");
-		
-
-		//chromeOptions.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
-		//chromeOptions.setExperimentalOption("useAutomationExtension", false);
 
 		chromeOptions.addArguments("--user-data-dir=C:/Users/bawat/AppData/Local/Google/Chrome/User Data/Profile 1");
 		chromeOptions.addArguments("--profile-directory=Default");

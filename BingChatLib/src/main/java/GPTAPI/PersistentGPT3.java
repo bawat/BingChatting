@@ -9,31 +9,39 @@ import static SeleniumControls.HelperMethods.*;
 public class PersistentGPT3 {
 	
 	private static WebDriver login() throws InterruptedException {
-		String targetURL = "https://chat.openai.com/auth/login";
+		String startingURL = "https://www.google.com/";
+		String loginURL = "https://chat.openai.com/auth/login";
+		String goalURL = "https://chat.openai.com/";
 		
 		WebDriver driver = provideAutocompleteSelenium();
-		driver.navigate().to("https://www.google.com/");
+		driver.navigate().to(startingURL);
 		
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("document.body.innerHTML = \'\';"
 				+ "var a = document.createElement('a');"
 				+ "var link = document.createTextNode(\"Click here to login to ChatGPT.\");"
 				+ "a.appendChild(link);"
-				+ "a.href = \"" + targetURL + "\";"
+				+ "a.href = \"" + loginURL + "\";"
 				+ "a.id = \"clickMeToProgress\";"
 				+ "a.style.zIndex = \"1000000\";"
 				+ "a.style.position = \"fixed\";"
 				+ "a.target = \"_blank\";"
 				+ "document.body.prepend(a);"
-				+ "window.location = '" +targetURL+ "';");
+				+ "window.location = '" +loginURL+ "';");
 		pauseOneSecond();
+		
+		if(goalURL.equalsIgnoreCase(driver.getCurrentUrl())) {
+			waitUntilFound(driver, driver, By.cssSelector("#prompt-textarea"));
+			return driver;
+		}
+		
 		while(driver.getWindowHandles().size() <= 1) {
 			Thread.sleep(1000);
 			Thread.yield();
 		}
 		driver.switchTo().window(driver.getWindowHandles().toArray(new String[]{})[1]);
 		
-		while(!"https://chat.openai.com/".equalsIgnoreCase(driver.getCurrentUrl())) {
+		while(!goalURL.equalsIgnoreCase(driver.getCurrentUrl())) {
 			Thread.sleep(1000);
 			Thread.yield();
 		}
@@ -59,6 +67,10 @@ public class PersistentGPT3 {
 	
 	public static void main(String[] args) {
 		new PersistentGPT3();
+	}
+
+	public WebDriver getDriver() {
+		return driver;
 	}
 }
 
