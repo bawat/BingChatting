@@ -23,6 +23,7 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.google.common/google-collect
    // compile 'com.google.common:google-collect:1.0-rc1' "The google-collect library has been deprecated and is now part of the guava library. You should use guava instead."
    //compile "io.github.bonigarcia:webdrivermanager:+" "I don't think the webdriver needs to be setup anymore, they bundeled it into Chrome"
+   compile 'com.frogking:UndetectedChromedriver:1.0-SNAPSHOT'
    compile 'org.slf4j:slf4j-simple:1.6.1'
    compile 'log4j:log4j:1.2.16'
    compile 'org.jsoup:jsoup:1.12.1'
