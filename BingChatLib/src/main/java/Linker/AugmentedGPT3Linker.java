@@ -1,10 +1,14 @@
 package Linker;
 
+import GPTAPI.ForgetfulBingChat;
 import GPTAPI.PersistentGPT3;
 import static SeleniumControls.HelperMethods.*;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -18,24 +22,39 @@ public class AugmentedGPT3Linker {
 		WebDriver driver = manager.getDriver();
 		
 		while(true) {
-			SetView<WebElement> newMessages = manager.getNewMessages();
-			if(!newMessages.isEmpty() && isConversationAugmented(driver)) {
-				boolean stillStreaming = newMessages.stream()
-					.filter(ele -> ele.getAttribute("class").contains("result-streaming") || ele.getText().isEmpty())
-					.findAny().isPresent();
-				
-				if(!stillStreaming) {
-					newMessages.stream().forEach(ele -> {
-						System.out.println("***" + ele.getText() + "***");
-					});
-					manager.clearNewMessages();
-				}
-			}
-			
-			Thread.yield();
 			try {
+				
+				SetView<WebElement> newMessages = manager.getNewMessages();
+				if(!newMessages.isEmpty() && isConversationAugmented(driver)) {
+					boolean stillStreaming = newMessages.stream()
+						.filter(ele -> ele.getAttribute("class").contains("result-streaming") || ele.getText().isEmpty())
+						.findAny().isPresent();
+					
+					if(!stillStreaming) {
+						newMessages.stream().forEach(ele -> {
+							System.out.println("***" + ele.getText() + "***");
+							getPromptFromMessage(ele.getText()).ifPresent(prompt -> {
+								System.out.println("Waiting for Bing - Prompt: " + prompt);
+								String reply = ForgetfulBingChat.getResponse(prompt, true);
+						        System.out.println("Response: " + reply);
+						        
+						        WebElement promptBox = waitUntilFound(driver, driver, By.cssSelector("#prompt-textarea"));
+						        promptBox.sendKeys("Primed!");
+						        
+						        JavascriptExecutor jse = (JavascriptExecutor)driver;
+						        jse.executeScript("arguments[0].value=arguments[1];", promptBox, reply);
+						        
+				        		waitUntilFound(driver, driver, By.cssSelector("[data-testid=\"send-button\"]")).click();
+							});
+						});
+						manager.clearNewMessages();
+					}
+				}
+				
+				Thread.yield();
 				Thread.sleep(300);
-			} catch (InterruptedException e) {
+				
+			} catch (InterruptedException | StaleElementReferenceException e) {
 				e.printStackTrace();
 			}
 		}

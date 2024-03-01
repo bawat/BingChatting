@@ -80,7 +80,16 @@ public class PersistentGPT3 {
 	}
 	
 	private List<WebElement> getGPTMessages(){
-		waitUntilFound(driver, driver, By.cssSelector("[data-testid=\"conversation-turn-2\"]"));
+		
+		while(driver.findElements(By.cssSelector("[data-testid=\"conversation-turn-2\"]")).isEmpty()) {
+			Thread.yield();
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		List<WebElement> msgs = driver.findElements(By.cssSelector("[data-message-author-role=\"assistant\"] > div"));
 		return msgs;
 	}

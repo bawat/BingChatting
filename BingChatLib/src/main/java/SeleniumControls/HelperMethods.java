@@ -4,6 +4,9 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -44,6 +47,20 @@ public class HelperMethods {
     	
     	return toSearch.findElement(toFind);
 	}
+    
+    public static void main(String[] args) {
+		String message = "Prompt-> \"Identify the key components needed to implement transmutation mechanics in a Minecraft mod.\"";
+		System.out.println(getPromptFromMessage(message));
+    }
+    
+    private final static Pattern pattern = Pattern.compile("prompt ?-> ?\"(.*?)\"", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> getPromptFromMessage(String message) {
+    	Matcher m = pattern.matcher(message);
+		if (m.find()) {
+			return Optional.of(m.group(1));
+		}
+		return Optional.empty();
+    }
     
     public static boolean isURLChanged(WebDriver driver, String oldURL) {
 		return !driver.getCurrentUrl().equalsIgnoreCase(oldURL);

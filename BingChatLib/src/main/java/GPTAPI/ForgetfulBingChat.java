@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
@@ -33,7 +34,7 @@ public class ForgetfulBingChat {
 	public static String getResponse(String request) {
 		return getResponse(request, false);
 	}
-    private static String getResponse(String request, boolean showBrowser) {
+    public static String getResponse(String request, boolean showBrowser) {
 		driver = provideSilentSelenium(showBrowser);
 		
 		if(USE_URL_ARGS) {
@@ -54,11 +55,22 @@ public class ForgetfulBingChat {
 			}
 		}
 		
+		WebElement searchBox;
+		SearchContext shadowRoot1 = null, shadowRoot2 = null, shadowRoot3 = null;
+		for(int i = 0; i < 3; i++) {
+			try {
+				shadowRoot1 = waitUntilFound(driver, By.cssSelector(".cib-serp-main")).getShadowRoot();
+				shadowRoot2 = waitUntilFound(shadowRoot1, By.cssSelector("#cib-action-bar-main")).getShadowRoot();
+				shadowRoot3 = waitUntilFound(shadowRoot2, By.cssSelector("cib-text-input")).getShadowRoot();
+				searchBox = waitUntilFound(shadowRoot3, By.cssSelector("#searchbox"));
+				break;
+			} catch(NoSuchElementException e) {
+				e.printStackTrace();
+				driver.navigate().refresh();
+				System.out.println("Trying again...");
+			}
+		}
 		
-		SearchContext shadowRoot1 = waitUntilFound(driver, By.cssSelector(".cib-serp-main")).getShadowRoot();
-		SearchContext shadowRoot2 = waitUntilFound(shadowRoot1, By.cssSelector("#cib-action-bar-main")).getShadowRoot();
-		SearchContext shadowRoot3 = waitUntilFound(shadowRoot2, By.cssSelector("cib-text-input")).getShadowRoot();
-		WebElement searchBox = waitUntilFound(shadowRoot3, By.cssSelector("#searchbox"));
 		
 		if(!USE_URL_ARGS){
 			pauseOneSecond();
