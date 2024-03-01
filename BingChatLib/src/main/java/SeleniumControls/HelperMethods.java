@@ -48,19 +48,6 @@ public class HelperMethods {
     public static boolean isURLChanged(WebDriver driver, String oldURL) {
 		return !driver.getCurrentUrl().equalsIgnoreCase(oldURL);
 	}
-    public static boolean isConversationAugmented(WebDriver driver) {
-    	try {
-	    	WebElement userMessage = driver
-	    		.findElement(By.cssSelector("[data-testid=\"conversation-turn-2\"]"))
-	    		.findElement(By.cssSelector("[data-message-author-role=\"user\"]"))
-	    		.findElement(By.tagName("div"));
-	    	
-	    	String userText = userMessage.getText();
-	    	return userText.contains("You have been reforged stronger then ever before.");
-    	} catch(NoSuchElementException ex) {
-    		return false;
-    	}
-    }
 	
     public static ChromeDriver provideSilentSelenium(boolean showBrowser) {
 		ChromeOptions chromeOptions = new ChromeOptions();
@@ -92,7 +79,7 @@ public class HelperMethods {
 		chromeOptions.addArguments("--user-data-dir=C:/Users/bawat/AppData/Local/Google/Chrome/User Data/Profile 1");
 		chromeOptions.addArguments("--profile-directory=Default");
 		
-		ChromeDriver driver = new ChromeDriverBuilder().build(chromeOptions, "C:\\Users\\bawat\\.cache\\selenium\\chromedriver\\win64\\122.0.6261.57\\chromedriver - Copy.exe");
+		ChromeDriver driver = new ChromeDriverBuilder().build(chromeOptions, "C:\\Users\\bawat\\.cache\\selenium\\chromedriver\\win64\\122.0.6261.94\\chromedriver - Copy.exe");
 		
 		return driver;
 	}

@@ -3,8 +3,16 @@ package GPTAPI;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 
 import static SeleniumControls.HelperMethods.*;
+
+import java.util.HashSet;
+import java.util.List;
 
 public class PersistentGPT3 {
 	
@@ -56,6 +64,11 @@ public class PersistentGPT3 {
 	}
 
 	private WebDriver driver;
+	public WebDriver getDriver() {
+		return driver;
+	}
+	private List<WebElement> seenMessages;
+	private String oldURL = "";
 	public PersistentGPT3(){
 		try {
 			driver = login();
@@ -63,14 +76,26 @@ public class PersistentGPT3 {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		clearNewMessages();
 	}
 	
-	public static void main(String[] args) {
-		new PersistentGPT3();
+	private List<WebElement> getGPTMessages(){
+		waitUntilFound(driver, driver, By.cssSelector("[data-testid=\"conversation-turn-2\"]"));
+		List<WebElement> msgs = driver.findElements(By.cssSelector("[data-message-author-role=\"assistant\"] > div"));
+		return msgs;
 	}
-
-	public WebDriver getDriver() {
-		return driver;
+	
+	public void clearNewMessages() {
+		seenMessages = getGPTMessages();
+	}
+	public SetView<WebElement> getNewMessages() {
+		if(isURLChanged(driver, oldURL)) {
+			clearNewMessages();
+			oldURL = driver.getCurrentUrl();
+		}
+		
+		SetView<WebElement> diff = Sets.difference(new HashSet<WebElement>(getGPTMessages()), new HashSet<WebElement>(seenMessages));
+		return diff;
 	}
 }
 
